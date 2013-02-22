@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple Chat Client</title>
+	<script>
+		(function(){
+			//ui
+			var _button = null;
+			var _display = null;
+
+			//ajax
+			var _sendAjax = null;
+			var _receiveAjax = null;
+
+			function init(){
+				initVar();
+				initEvent();
+				initAjax();
+			}
+
+			function initVar(){
+				_display = document.getElementById("display");
+				_button = document.getElementById("sendButton");
+			}
+
+			function initAjax(){
+				_sendAjax = new XMLHttpRequest();
+				if(!_sendAjax){
+					console.log("browser is too old.");
+					return;
+				}
+
+				_receiveAjax = new XMLHttpRequest();
+				if(!_receiveAjax){
+					console.log("browser is too old.");
+					return;
+				}
+
+				_receiveAjax.onreadystatechange = onReceive;
+			}
+
+			function initEvent(){
+				_button.addEventListener("click", function(){
+					var name = document.getElementById("nameField").value;
+					var msg = document.getElementById("msgField").value;
+					makeRequest(name, msg);
+				});
+			}
+
+			function makeRequest(name, msg){
+				_sendAjax.open("POST", "ChatRequest.php", true);
+				_sendAjax.setRequestHeader("Content-type", "application/json");
+				var json = {};
+				json.name = name;
+				json.msg = msg;
+				json.type = "send";
+				_sendAjax.send(JSON.stringify(json));
+			}
+
+			function listenToServer(){
+				_receiveAjax.open("POST", "ChatRequest.php", true);
+				_receiveAjax.setRequestHeader("Content-type", "application/json");
+				var json = {};
+				json.type = "receive";
+				_receiveAjax.send(JSON.stringify(json));
+			}
+
+			function onReceive(){
+				if(_receiveAjax.readyState == 4){
+					if(_receiveAjax.status == 200){
+						var result = JSON.parse(_receiveAjax.responseText);
+						var string = "";
+
+						for(var i = 0; i < result.length; i++){
+							string += result[i].name + ": " + result[i].msg + "\n";
+						}
+
+						_display.innerHTML = string;
+					}
+					else{
+						console.log("error");
+					}
+				}
+			}
+		
+			window.onload = init;
+			window.setInterval(listenToServer, 1000);
+		})();
+	</script>
+</head>
+<body>
+	<textarea cols="100" rows="20" id="display" readonly="true"></textarea>
+	<br>
+	<label>name:</label>
+	<input type="text" id="nameField"/>
+	<label>message:</label>
+	<input type="text" id="msgField" />
+	<input type="button" value="send" id="sendButton"/>
+</body>
+</html>
