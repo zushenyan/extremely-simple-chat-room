@@ -1,5 +1,6 @@
 # extremely-simple-chat-room
 A demonstration of an extremely simple chat room in PHP & Ajax.
+Inspired by this [article](http://css-tricks.com/jquery-php-chat/).
 
 ## How to run
 Toss these two files in your server, and run the client.html.
