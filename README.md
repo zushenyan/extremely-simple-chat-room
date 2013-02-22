@@ -1,4 +1,4 @@
-# extremely-simple-chat-room
+# Extremely Simple Chat Room
 A demonstration of an extremely simple chat room in PHP & Ajax.
 Inspired by this [article](http://css-tricks.com/jquery-php-chat/).
 
